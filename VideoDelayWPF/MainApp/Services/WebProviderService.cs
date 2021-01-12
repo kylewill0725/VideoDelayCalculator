@@ -16,6 +16,11 @@ namespace VideoDelayWPF.MainApp.Services
     {
         private IWebHost? _server;
 
+        public WebProviderService()
+        {
+            
+        }
+
         public void RestartServer(IEnvReader settings)
         {
             _server = WebHost
