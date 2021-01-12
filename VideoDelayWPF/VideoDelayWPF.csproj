@@ -4,10 +4,18 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="QRCoder" Version="1.4.1" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="dotenv.net" Version="2.1.1" />
+        <PackageReference Include="dotenv.net.DependencyInjection.Microsoft" Version="2.1.1" />
+        <PackageReference Include="QRCoder" Version="1.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="WebServer\www" />
     </ItemGroup>
 
 </Project>
