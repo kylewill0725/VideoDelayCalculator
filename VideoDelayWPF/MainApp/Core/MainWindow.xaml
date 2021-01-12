@@ -9,6 +9,6 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Image x:Name="QRCode" />
-        <TextBlock x:Name="TextBlock" Visibility="Collapsed" />
+        <TextBlock x:Name="TextBlock" Visibility="Visible" />
     </Grid>
 </Window>

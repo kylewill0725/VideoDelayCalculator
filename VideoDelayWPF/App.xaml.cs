@@ -26,29 +26,33 @@ namespace VideoDelayWPF
     public partial class App : Application
     {
         private ServiceProvider _serviceProvider;
+        private ServiceCollection _services;
 
         public App()
         {
-            var appServices = new ServiceCollection();
-            ConfigureServices(appServices);
-            _serviceProvider = appServices.BuildServiceProvider();
+            ConfigureServices();
 
-            var envSettings = _serviceProvider.GetService<IEnvReader>();
+            var envSettings = _serviceProvider!.GetService<IEnvReader>()!;
             _serviceProvider.GetService<MainWindow>()!.Show();
             _serviceProvider.GetService<WebProviderService>()!.RestartServer(envSettings);
         }
 
-        private void ConfigureServices(IServiceCollection services)
+        private void ConfigureServices()
         {
-            services.AddEnv(builder =>
+            _services = new ServiceCollection();
+            _services.AddEnv(builder =>
             {
                 builder
-                    .AddEnvFile(".env")
-                    .AddThrowOnError(false)
+                    .AddEnvFile("config.env")
+                    .AddThrowOnError(true)
                     .AddEncoding(Encoding.UTF8);
             });
-            services.AddSingleton<WebProviderService>();
-            services.AddSingleton<MainWindow>();
+            _services.AddEnvReader();
+            _services.AddSingleton<WebProviderService>();
+            _services.AddSingleton<MainWindow>();
+            
+            _serviceProvider = _services.BuildServiceProvider();
+            
         }
     }
 }

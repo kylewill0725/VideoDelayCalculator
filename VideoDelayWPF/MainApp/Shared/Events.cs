@@ -4,11 +4,11 @@ namespace VideoDelayWPF.MainApp.Shared
 {
     public static class Events
     {
-        public static event EventHandler<string>? OnWebServerStarted;
+        public static event EventHandler<int>? OnWebServerStarted;
 
-        public static void WebServerStarted(string address)
+        public static void WebServerStarted(int port)
         {
-            OnWebServerStarted?.Invoke(null, address);
+            OnWebServerStarted?.Invoke(null, port);
         }
     }
 }

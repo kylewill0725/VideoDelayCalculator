@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using dotenv.net.Interfaces;
 using Microsoft.AspNetCore;
@@ -24,7 +25,7 @@ namespace VideoDelayWPF.MainApp.Services
                     // Todo: Log missing env variables
                     if (!settings.TryGetIntValue("WebServerPort", out var port))
                     {
-                        port = 0;
+                        port = 61680;
                     }
                     
                     if (!settings.TryGetBooleanValue("AllowExternalIps", out var externalIps))
@@ -34,20 +35,25 @@ namespace VideoDelayWPF.MainApp.Services
 
                     if (externalIps)
                     {
-                        x.ListenAnyIP(port);
+                        x.Listen(IPAddress.Any, port);
                     }
                     
-                    x.ListenLocalhost(port);
+                    x.Listen(IPAddress.Loopback, port);
                 })
+                .UseWebRoot("WebServer/www")
                 .UseStartup<Startup>()
                 .Build();
             
             Task.Run(() =>
             {
                 _server.Start();
-                var serverAddresses = _server.ServerFeatures.Get<IServerAddressesFeature>();
+                var serverAddress = 
+                    _server.ServerFeatures.Get<IServerAddressesFeature>().Addresses
+                    .First(address => !address.Contains("127.0.0.1"));
+
+                var port = new Uri(serverAddress).Port;
                 
-                Events.WebServerStarted($"{serverAddresses.Addresses.First()}");
+                Events.WebServerStarted(port);
                 _server.WaitForShutdown();
             });
         }

@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using QRCoder;
+using VideoDelayWPF.MainApp.Shared;
 
 namespace VideoDelayWPF
 {
@@ -26,31 +27,15 @@ namespace VideoDelayWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Task _websocketServer;
-        private CancellationTokenSource _websocketCancel;
-        
-        // ReSharper disable once InconsistentNaming
-        public event EventHandler<Bitmap> IPGenerated; 
-        public event EventHandler<string> ClientConnected; 
 
         public MainWindow()
         {
             InitializeComponent();
-            IPGenerated += (_, b) =>
+            Events.OnWebServerStarted += (_, port) =>
             {
                 Dispatcher.Invoke(() =>
                 {
-                    QRCode.Source = b.ToImageSource();
-                });
-            };
-
-            ClientConnected += (_, clientIP) =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    QRCode.Visibility = Visibility.Collapsed;
-                    TextBlock.Visibility = Visibility.Visible;
-                    TextBlock.Text = clientIP;
+                    TextBlock.Text = port.ToString();
                 });
             };
         }
@@ -58,10 +43,10 @@ namespace VideoDelayWPF
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             
-            if (_websocketServer != null) return;
-            
-            _websocketCancel = new CancellationTokenSource();
-            _websocketServer = Task.Run(RunWebSocketServer, _websocketCancel.Token);
+            // if (_websocketServer != null) return;
+            //
+            // _websocketCancel = new CancellationTokenSource();
+            // _websocketServer = Task.Run(RunWebSocketServer, _websocketCancel.Token);
         }
 
         private  void RunWebSocketServer()
@@ -72,10 +57,10 @@ namespace VideoDelayWPF
             var qrGenerator = new QRCodeGenerator();
             var qrData = qrGenerator.CreateQrCode($"ws://{GetLocalIp()}:{endpoint.Port}", QRCodeGenerator.ECCLevel.M);
             
-            IPGenerated?.Invoke(this, new QRCode(qrData).GetGraphic(5));
+            // IPGenerated?.Invoke(this, new QRCode(qrData).GetGraphic(5));
 
             var client = server.AcceptSocket();
-            ClientConnected?.Invoke(this, $"{client.LocalEndPoint}");
+            // ClientConnected?.Invoke(this, $"{client.LocalEndPoint}");
         }
 
         /// <summary>
